@@ -56,28 +56,54 @@ def _custom_filter(img):
 
 if __name__ == '__main__':
     for image_path in IMAGE_PATHS:
+        img = cv2.imread(image_path)
+
+        color = ('b', 'g', 'r')
+        for channel, col in enumerate(color):
+            histr = cv2.calcHist([img], [channel], None, [256], [0, 256])
+            plt.plot(histr, color=col)
+            plt.xlim([0, 256])
+        plt.title('Histogram for color scale picture of original image')
+        plt.show()
+
+        key = cv2.waitKey()
+        luv_img = _convert_image_to_luv(img)
+        key = cv2.waitKey()
+        plt.hist(luv_img.ravel(), 256, [0, 256], label='LUV Color Scheme Plot')
+        plt.show()
+
+        key = cv2.waitKey()
+        grey_img = _convert_image_to_grey(img)
+        plt.hist(grey_img.ravel(), 256, [0, 256], label='Grey Plot')
+        plt.show()
+
+        key = cv2.waitKey()
+        adjusted_img = _linear_contrast(img)
+        plt.hist(adjusted_img.ravel(), 256, [0, 256], label='Adjusted Plot')
+        plt.show()
+
+        key = cv2.waitKey()
+        median = _median_filter(img)
+        plt.hist(median.ravel(), 256, [0, 256], label='Median Blurred Plot')
+        plt.show()
+
+        key = cv2.waitKey()
+        gaussian_blur = _gauss_filter(img)
+        plt.hist(gaussian_blur.ravel(), 256, [0, 256], label='Gaussian Blurred Plot')
+        plt.show()
+
+        key = cv2.waitKey()
+        custom_filter_img = _custom_filter(img)
+        plt.hist(custom_filter_img.ravel(), 256, [0, 256], label='Custom Filter Plot')
+        plt.show()
+
         while True:
-            img = cv2.imread(image_path)
-            cv2.imshow('Original Image', img)
-
-            _convert_image_to_luv(img)
-
-            grey_img = _convert_image_to_grey(img)
-            plt.hist(grey_img.ravel(), 256, [0, 256])
-            plt.show()
-
-            adjusted_img = _linear_contrast(grey_img)
-            plt.hist(adjusted_img.ravel(), 256, [0, 256])
-            plt.show()
-
-            _median_filter(img)
-            _gauss_filter(img)
-            _custom_filter(img)
-
             height = img.shape[0]
             width = img.shape[1]
             print("Height: " + str(height))
             print("Wide: " + str(width))
+            cv2.imshow('Original Image', img)
+
             key = cv2.waitKey()
 
             if key == SPACE_CODE:
